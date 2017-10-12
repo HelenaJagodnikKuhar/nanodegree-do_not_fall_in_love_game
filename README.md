@@ -2,7 +2,7 @@
 
 A tribute to a Classic Arcade Game is a simple web game, supported in Safari, Chrome, Firefox browsers written in Javascript with HTML5 and CSS3.
 
-[Demo](https://HelenaJagodnikKuhar.github.io/nanodegree-don_not_fall_in_love_game)
+[Demo](https://helenajagodnikkuhar.github.io/nanodegree-do_not_fall_in_love_game/)
 
 
 ### Prerequisites
