@@ -4,19 +4,9 @@ A tribute to a Classic Arcade Game is a simple web game, supported in Safari, Ch
 
 [Demo](https://helenajagodnikkuhar.github.io/nanodegree-do_not_fall_in_love_game/)
 
-
-### Prerequisites
-
-Npm version 5.
-To start a server from the command line:
-
-```sh
-$ npm install -g http-server
-```
-
 ### Running Game Don't Fall in Love
 
-Clone the GitHub repository and run the game on your server.
+Clone the GitHub repository and run the index.html file in your browser. Or you can use the Demo link to start the game.
 
 ```sh
 $ git clone https://github.com/HelenaJagodnikKuhar/nanodegree-don_not_-fall_in_love_game
@@ -26,8 +16,14 @@ $ http-server [path]
 
 ### Playing the game
 
-The game has a Player - a girl who is scared to fall in love therefore she avoids Enemies - hearts.
-She will win and gain a score when she reaches water blocks. She is limited with 20s to do that. Game over resets the score. 
+The game has a Player - a girl who is scared to fall in love, therefore, she avoids Enemies - hearts.
+
+The game starts when the timer starts to run. Use the arrow keys to move the player - a girl around the playfield while avoiding Enemies - hearts. 
+She will win and gain a score when she reaches water blocks. She is limited with the 20s to do that. Game won adds a point to the score table. 
+Game over is when she doesn't reach the water - she runs out of time or when she hits the Enemies - hearts. Game over resets the score. Start the game from the beginning.
+
+Happy playing.
+
 
 ### Contributing
 
@@ -38,7 +34,3 @@ With those tools I added a number od entities to the game, including the player 
 ### License
 
 The contents of this repository are covered under the [CC BY 3.0 USß](https://creativecommons.org/licenses/by/3.0/us/).
-
-
-
-

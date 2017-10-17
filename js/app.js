@@ -1,34 +1,68 @@
+'use strict';
+
 /**
-* @description Represents an Enemy
+* @description Represents commmon properties of the objects
 * @constructor
 * @param {number} x - The x coordinate
-* @param {number} row - The y coordinate
-* @param {number} speed - The speed of an enemy
+* @param {number} y - The y coordinate
 */
 
-var Enemy = function(x, row, speed) {
-    var enemy;
+function Character(x, y) {
     this.x = x;
+    this.y = y;
+}
 
-    this.row = row;
-    var verticalSpace = 85;
-    var topMargin = 80;
-    this.y = topMargin + this.row * verticalSpace;
+/**
+* @description Represents commmon function: rendering the objects
+* @constructor
+*/
+
+Character.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+/**
+* @description Enemy Object
+* @constructor
+*/
+
+function Enemy(x, row, speed) {
+    var VERTICAL_SPACE = 85;
+    var TOP_MARGIN = 80;
+    var y = TOP_MARGIN + row * VERTICAL_SPACE;
+    Character.call(this, x, y);
 
     this.speed = speed;
-
     this.sprite = "images/enemy-bug.png";
-};
+}
+
+Enemy.prototype = Object.create(Character.prototype);
+Enemy.prototype.constructor = Enemy;
 
 var allEnemies = [];
 
 // Show ememies when offscreen
-var horizontalSpaceEnemy = 105;
-var virtualMinX = -(horizontalSpaceEnemy * 3);
-var virtualMaxX = horizontalSpaceEnemy * 10;
+var HORIZONTAL_SPACE_ENEMY = 105;
+var virtualMinX = -(HORIZONTAL_SPACE_ENEMY * 3);
+var virtualMaxX = HORIZONTAL_SPACE_ENEMY * 10;
 
 // Flag for game over
 var game_over = false;
+
+/**
+* @description Check Collisions when Player hits enemies
+*/
+
+Enemy.prototype.checkCollisions = function() {
+    // calculate the distance between the player and enemyies, if it hits game over
+    var xDiff = Math.pow((player.x - this.x), 2);
+    var yDiff = Math.pow((player.y - this.y), 2);
+    var theDisstance = Math.sqrt(xDiff + yDiff);
+
+    if (theDisstance < 40 && !game_over) {
+        gameOver();
+    }
+};
 
 /**
 * @description Updates
@@ -46,23 +80,9 @@ Enemy.prototype.update = function(dt, speed) {
             this.x += (virtualMaxX - virtualMinX);
         }
     }
-        // calculate the distance between the player and enemyies, if it hits game over
-        var xDiff = Math.pow((player.x - this.x), 2);
-        var yDiff = Math.pow((player.y - this.y), 2);
-        var theDisstance = Math.sqrt(xDiff + yDiff);
+    this.checkCollisions();
 
-        if (theDisstance < 40 && !game_over) {
-            gameOver();
-        }
-}
-
-/**
-* @description Render the enemies on the screen
-*/
-
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 
 // Enemies's different speed from row to row
 var speeds = [];
@@ -76,7 +96,7 @@ for (var row = 0; row < 3; row++) {
     var prev_position = virtualMinX;
     for (var i = 0; i < 80; i++) {
         var speedEnemy = speeds[row];
-        var difference = horizontalSpaceEnemy + Math.round(Math.random() * 2) * horizontalSpaceEnemy;
+        var difference = HORIZONTAL_SPACE_ENEMY + Math.round(Math.random() * 2) * HORIZONTAL_SPACE_ENEMY;
         var new_position = prev_position + difference;
         if (new_position > virtualMaxX) {
             break;
@@ -93,12 +113,16 @@ for (var row = 0; row < 3; row++) {
 * @constructor Player
 */
 
-var Player =  function() {
-    this.setInitPosition();
-    this.sprite = "images/char-boy.png";
-};
+function Player(x, y) {
+    Character.call(this);
 
-var player = [];
+    this.sprite = "images/char-boy.png";
+    this.setInitPosition();
+    this.myscore = 0;
+}
+
+Player.prototype = Object.create(Character.prototype);
+Player.prototype.constructor = Player;
 
 /**
 * @description Player initial location
@@ -107,11 +131,10 @@ var player = [];
 Player.prototype.setInitPosition = function() {
     this.x = 202;
     this.y = 404;
-}
+};
 
 // Flag for game won
 var game_won = false;
-var myScore = 0;
 
 /**
 * @description Game over resets the game
@@ -119,11 +142,11 @@ var myScore = 0;
 
 function gameOver() {
     game_over = true;
-  setTimeout(function resetGame() {
-    player.setInitPosition();
-    game_over = false;
-    gameStartInMs = Date.now();
-    myScore = 0;
+    setTimeout(function resetGame() {
+        player.setInitPosition();
+        game_over = false;
+        gameStartInMs = Date.now();
+        player.myscore = 0;
     }, 3000);
 }
 
@@ -158,20 +181,20 @@ function remainingTime() {
 Player.prototype.update = function() {
     if (this.y <= 10 && !game_won) {
         gameWon();
-        myScore++;
+        this.myscore++;
         game_won = true;
     }
     if (!game_over && !game_won && remainingTime() <= 0 ) {
         gameOver();
     }
-}
+};
 
 /**
 * @description Render the player on the screen
 */
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    Character.prototype.render.call(this);
     ctx.clearRect(0, 0, 505, 50);
     if (game_over) {
         ctx.save();
@@ -192,12 +215,12 @@ Player.prototype.render = function() {
     }
     ctx.font="25px Verdana";
     ctx.textAlign="cener";
-    ctx.fillText("Score: " + myScore, 380, 40);
+    ctx.fillText("Score: " + this.myscore, 380, 40);
     if (!game_over && !game_won) {
         var convertTimeNumber = Math.round( remainingTime() );
         ctx.fillText("Time left: " + convertTimeNumber, 10, 40);
     }
-}
+};
 /**
 * @description Moves the player and setts the borders
 * @param {string} key - Pressed keys on keyboard
@@ -221,7 +244,7 @@ Player.prototype.handleInput = function(key) {
             this.y += 83;
         }
     }
-}
+};
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -240,14 +263,3 @@ document.addEventListener("keyup", function(e) {
 });
 
 var player = new Player();
-
-
-
-
-
-
-
-
-
-
-
